@@ -7,7 +7,7 @@ load_dotenv()
 api_key = os.environ.get("OPENROUTER_API_KEY")
 
 if not api_key:
-    raise RuntimeError("Please add api key in .env")
+    raise RuntimeError("Please add api key in .env as `OPENROUTER_API_KEY`")
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
