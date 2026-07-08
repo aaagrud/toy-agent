@@ -1,5 +1,22 @@
 import os
 
+schema_get_files_info = {
+    "type": "function",
+    "function": {
+        "name": "get_files_info",
+        "description": "Lists files in a specified directory relative to the working directory, providing file size and directory status",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "directory": {
+                    "type": "string",
+                    "description": "Directory path to list files from, relative to the working directory (default is the working directory itself)",
+                },
+            },
+        },
+    },
+}
+
 def file_dir_details(name: str, path: str):
     return f"{name}: file_size={os.path.getsize(path)}, is_dir={os.path.isdir(path)}"
 

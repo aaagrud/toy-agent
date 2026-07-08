@@ -1,5 +1,26 @@
 import os
 
+schema_write_file = {
+    "type": "function",
+    "function": {
+        "name": "write_file",
+        "description": "Write to a file in a specified directory relative to the working directory, providing string output on status of write",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "File path to filet to write to, relative to the working directory (default is the working directory itself)",
+                },
+                "content": {
+                    "type": "string",
+                    "description": "content to write into the file",
+                },
+            },
+        },
+    },
+}
+
 def write_file(working_directory: str, file_path: str, content: str) -> str:
     '''
     file_path is the relative path to file
