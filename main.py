@@ -1,7 +1,7 @@
 import os
 import argparse
 import json
-from call_function import available_functions
+from call_function import available_functions, call_function
 from prompts import system_prompt
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -17,6 +17,7 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=api_key,
 )
+output = False
 
 parser = argparse.ArgumentParser(description="Chatbot")
 parser.add_argument("user_prompt", type=str, help="User prompt")
@@ -33,23 +34,37 @@ messages=[
         "content": args.user_prompt
     },
 ]
-response = client.chat.completions.create(
-    model = "openrouter/free",
-    messages = messages,
-    tools=available_functions,
-)
-if not response.usage:
-    raise RuntimeError("Failed API Request")
+i = 0
+for i in range(20):
+    response = client.chat.completions.create(
+        model = "openrouter/free",
+        messages = messages,
+        tools=available_functions,
+    )
+    if not response.usage:
+        raise RuntimeError("Failed API Request")
 
-message = response.choices[0].message
-if args.verbose:
-    print(f"User prompt: {args.user_prompt}")
-    print(f"Prompt tokens: {response.usage.prompt_tokens}")
-    print(f"Response tokens: {response.usage.completion_tokens}")
+    message = response.choices[0].message
+    messages.append(message)
 
-if message.tool_calls:
-    for tool_call in message.tool_calls:
-        function_args = json.loads(tool_call.function.arguments or "{}")
-        print(f"Calling function: {tool_call.function.name}({function_args})")
-else:
-    print(f"Response: {message.content}")
+    if args.verbose:
+        print(f"User prompt: {args.user_prompt}")
+        print(f"Prompt tokens: {response.usage.prompt_tokens}")
+        print(f"Response tokens: {response.usage.completion_tokens}")
+
+    if message.tool_calls:
+        for tool_call in message.tool_calls:
+            function_args = json.loads(tool_call.function.arguments or "{}")
+            result_message = call_function(tool_call, verbose=args.verbose)
+            if result_message["content"]:
+                print(f"-> {result_message['content']}")
+                messages.append(result_message)
+            else:
+                raise Exception("Tool call failed")
+    else:
+        print(f"Response: {message.content}")
+        output = True
+        break
+if not output:
+    print("20 iterations done, LLM failed to answer")
+    exit(1)
