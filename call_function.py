@@ -4,6 +4,7 @@ from functions.get_file_content import schema_get_file_content, get_file_content
 from functions.run_python_file import schema_run_python_file, run_python_file
 from functions.write_file import schema_write_file, write_file
 from collections.abc import Callable
+from config import working_directory
 
 available_functions = [
     schema_get_files_info,
@@ -22,7 +23,6 @@ function_map: dict[str, Callable[..., str]] = {
 def call_function(tool_call, verbose: bool = False) -> dict:
     function_name = tool_call.function.name
     function_args = json.loads(tool_call.function.arguments or "{}")
-    working_directory = "./calculator"
     if verbose:
         print(f" - Calling function: {function_name}({function_args})")
     else:
