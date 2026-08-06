@@ -25,3 +25,5 @@ I have set a limit of 20 back and forths max for the agent before it taps out! Y
 - Python
 - Python OpenAI SDK
 - OpenRouter API
+
+<sup><sub>AI didn't write the code, I did</sub></sup>
